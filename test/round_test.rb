@@ -25,5 +25,55 @@ class RoundTest < Minitest::Test
     new_turn = @round.take_turn("Juneau")
     assert_instance_of Turn, new_turn
     assert new_turn.correct?
+    expected = [new_turn]
+    assert_equal expected, @round.turns
+    assert_equal @card2, @round.current_card
+  end
+
+  def test_it_counts_correct_answers
+    @round.take_turn("Juneau")
+    assert_equal 1, @round.number_correct
+  end
+
+  def test_it_counts_turns
+    @round.take_turn("Juneau")
+    @round.take_turn("Venus")
+    assert_equal 2, @round.turns.count
+  end
+
+  def test_it_returns_feedback
+    @round.take_turn("Juneau")
+    @round.take_turn("Venus")
+    assert_equal "Incorrect!", @round.turns.last.feedback
+  end
+
+  def test_it_does_not_count_incorrect
+    @round.take_turn("Juneau")
+    @round.take_turn("Venus")
+    assert_equal 1, @round.number_correct
+  end
+
+  def test_it_counts_correct_in_category
+    @round.take_turn("Juneau")
+    @round.take_turn("Venus")
+    assert_equal 1, @round.number_correct_by_category(:Geography)
+  end
+
+  def test_it_counts_correct_in_other_category
+    @round.take_turn("Juneau")
+    @round.take_turn("Venus")
+    assert_equal 0, @round.number_correct_by_category(:STEM)
+  end
+
+  def test_it_gives_percentage_of_correct
+    @round.take_turn("Juneau")
+    @round.take_turn("Venus")
+    assert_equal 50.0, @round.percent_correct
+  end
+
+  def test_it_gives_percent_correct_in_category
+    @round.take_turn("Juneau")
+    @round.take_turn("Venus")
+    assert_equal 100.0, @round.percent_correct_by_category(:Geography)
   end
 end
